@@ -61,6 +61,21 @@ class TimerMathTest {
     }
 
     @Test
+    fun formatsTimeSpent() {
+        assertEquals("1 h 30 min", TimerMath.formatDuration(90 * 60))
+        assertEquals("2 h", TimerMath.formatDuration(120 * 60))
+        assertEquals("25 min", TimerMath.formatDuration(25 * 60))
+        assertEquals("0 min", TimerMath.formatDuration(0))
+    }
+
+    @Test
+    fun labelsReps() {
+        assertEquals("1 rep", TimerMath.repsLabel(1))
+        assertEquals("0 reps", TimerMath.repsLabel(0))
+        assertEquals("3 reps", TimerMath.repsLabel(3))
+    }
+
+    @Test
     fun parsesMinutesWithinRange() {
         assertEquals(25 * 60, TimerMath.parseMinutes(" 25 "))
         assertNull(TimerMath.parseMinutes("0"))

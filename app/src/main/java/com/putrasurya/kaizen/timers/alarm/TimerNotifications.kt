@@ -51,9 +51,9 @@ class TimerNotifications(private val context: Context) {
     }
 
     /** Plays the timer sound (set on the channel). */
-    fun showDone(timer: TimerEntity) {
+    fun showDone(timer: TimerEntity, repsToday: Int) {
         val notification = base(DONE_CHANNEL, timer)
-            .setContentText("Time's up")
+            .setContentText("Time's up · ${TimerMath.repsLabel(repsToday)} today")
             .setCategory(Notification.CATEGORY_ALARM)
             .setAutoCancel(true)
             .build()

@@ -42,6 +42,8 @@ import com.putrasurya.kaizen.core.ui.PermissionsBanner
 import com.putrasurya.kaizen.timers.data.TimerWithRun
 import com.putrasurya.kaizen.timers.domain.TimerMath
 import kotlinx.coroutines.delay
+import java.time.format.TextStyle
+import java.util.Locale
 
 /** What the add/edit dialog is showing, if anything. */
 private sealed interface DialogState {
@@ -57,7 +59,10 @@ fun TimersScreen(modifier: Modifier = Modifier) {
             initializer { TimersViewModel(app.container.timerRepository, app.container.clock) }
         }
     )
-    val weekday by viewModel.weekday.collectAsStateWithLifecycle()
+    val selection by viewModel.selection.collectAsStateWithLifecycle()
+    val weekday = selection.weekday
+    val dayLabel = if (selection.isToday) "today"
+    else "on " + selection.date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
     val timers by viewModel.timers.collectAsStateWithLifecycle()
     var dialog by remember { mutableStateOf<DialogState?>(null) }
 
@@ -100,6 +105,7 @@ fun TimersScreen(modifier: Modifier = Modifier) {
                 TimerCard(
                     item = item,
                     now = now,
+                    dayLabel = dayLabel,
                     onClick = { dialog = DialogState.Edit(item) },
                     onStart = { viewModel.start(item.timer.id) },
                     onPause = { viewModel.pause(item.timer.id) },
@@ -150,6 +156,7 @@ fun TimersScreen(modifier: Modifier = Modifier) {
 private fun TimerCard(
     item: TimerWithRun,
     now: Long,
+    dayLabel: String,
     onClick: () -> Unit,
     onStart: () -> Unit,
     onPause: () -> Unit,
@@ -164,6 +171,15 @@ private fun TimerCard(
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(item.timer.title, style = MaterialTheme.typography.titleMedium)
             Text(TimerMath.formatClock(seconds), style = MaterialTheme.typography.displaySmall)
+            if (item.repsTotal > 0) {
+                // "3 reps today · 1 h 15 min · 42 all time", like the web app.
+                val spent = TimerMath.formatDuration(item.reps.toLong() * item.timer.durationSec)
+                Text(
+                    "${TimerMath.repsLabel(item.reps)} $dayLabel · $spent · ${item.repsTotal} all time",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 when {
                     item.isRunning -> Button(onClick = onPause) { Text("Pause") }

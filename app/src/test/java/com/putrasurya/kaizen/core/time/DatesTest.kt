@@ -44,6 +44,21 @@ class DatesTest {
     }
 
     @Test
+    fun dateInSameWeekFindsTheWeekday() {
+        val wednesday = LocalDate.of(2026, 11, 18)
+        assertEquals(LocalDate.of(2026, 11, 16), Dates.dateInSameWeek(wednesday, 1)) // Monday
+        assertEquals(wednesday, Dates.dateInSameWeek(wednesday, 3))
+        assertEquals(LocalDate.of(2026, 11, 22), Dates.dateInSameWeek(wednesday, 7)) // Sunday
+    }
+
+    @Test
+    fun dateOfUsesTheClockTimeZone() {
+        val moment = Instant.parse("2026-11-17T18:30:00Z").toEpochMilli()
+        val jakarta = Clock.fixed(Instant.EPOCH, ZoneId.of("Asia/Jakarta"))
+        assertEquals(LocalDate.of(2026, 11, 18), Dates.dateOf(moment, jakarta))
+    }
+
+    @Test
     fun keysRoundTrip() {
         val date = LocalDate.of(2026, 3, 5)
         assertEquals("2026-03-05", Dates.toKey(date))
