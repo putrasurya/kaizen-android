@@ -42,7 +42,7 @@ object FocusMath {
      * counts; today doesn't break the streak while it's still going.
      */
     fun streak(days: Map<LocalDate, FocusDay>, planned: Set<Int>, today: LocalDate): Int {
-        val first = days.keys.minOrNull() ?: return 0
+        val first: LocalDate = days.keys.minByOrNull { it.toEpochDay() } ?: return 0
         var count = 0
         var date = today
         while (!date.isBefore(first)) {

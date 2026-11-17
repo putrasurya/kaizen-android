@@ -2,6 +2,7 @@ package com.putrasurya.kaizen.core
 
 import android.content.Context
 import com.putrasurya.kaizen.core.data.KaizenDatabase
+import com.putrasurya.kaizen.habits.data.HabitRepository
 import com.putrasurya.kaizen.timers.alarm.TimerAlarms
 import com.putrasurya.kaizen.timers.alarm.TimerNotifications
 import com.putrasurya.kaizen.timers.data.TimerRepository
@@ -35,4 +36,6 @@ class AppContainer(context: Context) {
             clock = clock,
         )
     }
+
+    val habitRepository: HabitRepository by lazy { HabitRepository(database.habitDao(), clock) }
 }

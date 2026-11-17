@@ -25,6 +25,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.putrasurya.kaizen.core.ui.ComingSoon
+import com.putrasurya.kaizen.habits.ui.HabitsScreen
 import com.putrasurya.kaizen.more.MoreScreen
 import com.putrasurya.kaizen.reminder.ui.ReminderTestScreen
 import com.putrasurya.kaizen.timers.ui.FocusHistoryScreen
@@ -94,7 +95,7 @@ fun KaizenRoot() {
                     onBack = { navController.popBackStack() },
                 )
             }
-            composable(Tab.Habits.route) { ComingSoon("Habits", "Phase 3") }
+            composable(Tab.Habits.route) { HabitsScreen() }
             composable(Tab.Todos.route) { ComingSoon("Todos", "Phase 4") }
             composable(Tab.Journal.route) { ComingSoon("Journal", "Phase 5") }
             composable(Tab.More.route) {
