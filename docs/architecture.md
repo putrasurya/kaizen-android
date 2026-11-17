@@ -52,7 +52,7 @@ here, keep using it in the web app.
 | Phase | What |
 |---|---|
 | 0 ✅ | Prototype: exact alarm → notification → spoken message |
-| 1 | Foundation: package structure, Room, `Clock`, navigation with bottom bar |
+| 1 ✅ | Foundation: package structure, Room, `Clock`, navigation with bottom bar |
 | 2a | Timers: create/edit per weekday, countdown that survives the app closing, sound at the end |
 | 2b | Timers: reps per day |
 | 2c | Timers: Pomodoro breaks (auto-break, long break every N rounds) |
