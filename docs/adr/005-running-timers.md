@@ -1,7 +1,7 @@
 # ADR-005: Running timers are timestamps plus an exact alarm, not a ticking service
 
 ## Status
-Proposed
+Accepted (2026-11-17)
 
 ## Context
 Timers are the most used feature. A running timer must finish on time with

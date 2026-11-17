@@ -39,9 +39,9 @@ Everything runs on the phone. There is no server and no sync (ADR-002).
 |---|---|---|
 | [001](adr/001-native-android.md) | Native Android with Kotlin + Compose | Accepted |
 | [002](adr/002-local-only-fresh-start.md) | Local-only data, fresh start, no sync | Accepted |
-| [003](adr/003-app-structure.md) | One module, package per feature, plain Kotlin rules | Proposed |
-| [004](adr/004-room-storage.md) | Room database, data kept as logs by date | Proposed |
-| [005](adr/005-running-timers.md) | Running timers = saved end time + exact alarm | Proposed |
+| [003](adr/003-app-structure.md) | One module, package per feature, plain Kotlin rules | Accepted |
+| [004](adr/004-room-storage.md) | Room database, data kept as logs by date | Accepted |
+| [005](adr/005-running-timers.md) | Running timers = saved end time + exact alarm | Accepted |
 
 ## Roadmap
 

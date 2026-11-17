@@ -1,7 +1,7 @@
 # ADR-004: Store data in Room, as logs keyed by date
 
 ## Status
-Proposed
+Accepted (2026-11-17)
 
 ## Context
 All data is local (ADR-002). Screens need live updates ("today's reps",
