@@ -2,6 +2,8 @@
 
 Native Android version of [Kaizen](https://github.com/putrasurya/kaizen), written in Kotlin with Jetpack Compose.
 
+See [docs/architecture.md](docs/architecture.md) for the design, the roadmap and the decision records (ADRs).
+
 ## Current stage: reminder prototype
 
 This first version only proves the hardest part of the idea: **waking up on time while the app is closed, showing a notification, and speaking the reminder out loud.**
