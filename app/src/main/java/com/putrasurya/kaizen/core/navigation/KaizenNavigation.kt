@@ -25,6 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import com.putrasurya.kaizen.core.ui.ComingSoon
 import com.putrasurya.kaizen.more.MoreScreen
 import com.putrasurya.kaizen.reminder.ui.ReminderTestScreen
+import com.putrasurya.kaizen.timers.ui.TimersScreen
 
 /** The five bottom-bar tabs (ADR-003). Timers first: the most used feature. */
 enum class Tab(val route: String, val label: String, val icon: ImageVector) {
@@ -78,7 +79,7 @@ fun KaizenRoot() {
             startDestination = Tab.Timers.route,
             modifier = Modifier.padding(padding),
         ) {
-            composable(Tab.Timers.route) { ComingSoon("Timers", "Phase 2") }
+            composable(Tab.Timers.route) { TimersScreen() }
             composable(Tab.Habits.route) { ComingSoon("Habits", "Phase 3") }
             composable(Tab.Todos.route) { ComingSoon("Todos", "Phase 4") }
             composable(Tab.Journal.route) { ComingSoon("Journal", "Phase 5") }

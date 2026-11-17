@@ -4,16 +4,25 @@ Native Android version of [Kaizen](https://github.com/putrasurya/kaizen), writte
 
 See [docs/architecture.md](docs/architecture.md) for the design, the roadmap and the decision records (ADRs).
 
-## Current stage: Phase 1, foundation
+## Current stage: Phase 2a, timers
 
-The app opens with a bottom bar (Timers · Habits · Todos · Journal · More).
-The feature tabs are placeholders until their phase lands; the Phase 0
-reminder prototype lives under **More → Reminder test**.
+**Timers** work: add a timer to one or more weekdays, start, pause, resume and
+reset it. The screen opens on today's weekday. A running timer keeps going when
+the app is closed: its end time is saved, an exact alarm rings when it's due
+(with sound), and a notification shows the countdown with Pause / Reset
+buttons. After a phone restart, running timers are put back. (ADR-005)
+
+The other tabs are placeholders until their phase lands; the Phase 0 reminder
+prototype lives under **More → Reminder test**.
 
 ```
 com.putrasurya.kaizen
-├── core/        AppContainer, Room database, dates, theme, navigation
-├── timers/      data/ (tables for Phase 2)
+├── core/        AppContainer, Room database, dates, theme, navigation, boot receiver
+├── timers/
+│   ├── domain/  TimerMath: countdown rules (unit-tested)
+│   ├── data/    tables, DAO, TimerRepository (database + alarm + notification in step)
+│   ├── alarm/   exact alarms, notifications, receiver for alarm and buttons
+│   └── ui/      Timers screen, weekday row, add/edit dialog
 ├── more/        the More tab
 └── reminder/    alarm, notification, voice + the test screen
 ```
@@ -31,4 +40,4 @@ The voice prefers Indonesian. If you don't hear it, check *Settings → System �
 
 ## Next steps
 
-See the roadmap in [docs/architecture.md](docs/architecture.md#roadmap). Next up: **Phase 2a, timers**.
+See the roadmap in [docs/architecture.md](docs/architecture.md#roadmap). Next up: **Phase 2b, reps per day**.

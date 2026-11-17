@@ -8,6 +8,8 @@
     <!-- Short foreground service used while TextToSpeech is talking -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <!-- Put timer alarms back after the phone restarts -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <!-- Lets the app find the TextToSpeech engine on Android 11+ -->
     <queries>
@@ -37,6 +39,21 @@
         <receiver
             android:name=".reminder.ReminderReceiver"
             android:exported="false" />
+
+        <!-- Timer alarm (time's up) and notification buttons (pause, resume, reset) -->
+        <receiver
+            android:name=".timers.alarm.TimerActionReceiver"
+            android:exported="false" />
+
+        <!-- Restores alarms after a reboot or an app update -->
+        <receiver
+            android:name=".core.system.BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
 
         <!-- Speaks the reminder out loud, then stops itself -->
         <service

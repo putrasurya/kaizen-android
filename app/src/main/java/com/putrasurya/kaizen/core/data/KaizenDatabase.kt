@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.putrasurya.kaizen.timers.data.FocusLogEntity
+import com.putrasurya.kaizen.timers.data.TimerDao
 import com.putrasurya.kaizen.timers.data.TimerEntity
 import com.putrasurya.kaizen.timers.data.TimerRepsEntity
 import com.putrasurya.kaizen.timers.data.TimerRunEntity
@@ -27,6 +28,8 @@ import com.putrasurya.kaizen.timers.data.TimerRunEntity
 )
 @TypeConverters(Converters::class)
 abstract class KaizenDatabase : RoomDatabase() {
+
+    abstract fun timerDao(): TimerDao
 
     companion object {
         fun create(context: Context): KaizenDatabase =
