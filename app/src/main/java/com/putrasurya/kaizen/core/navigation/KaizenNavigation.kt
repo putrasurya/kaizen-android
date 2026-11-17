@@ -26,10 +26,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.putrasurya.kaizen.core.ui.ComingSoon
 import com.putrasurya.kaizen.habits.ui.HabitsScreen
+import com.putrasurya.kaizen.journal.ui.JournalScreen
 import com.putrasurya.kaizen.more.MoreScreen
 import com.putrasurya.kaizen.reminder.ui.ReminderTestScreen
 import com.putrasurya.kaizen.timers.ui.FocusHistoryScreen
 import com.putrasurya.kaizen.timers.ui.TimersScreen
+import com.putrasurya.kaizen.todos.ui.TodosScreen
 
 /** The five bottom-bar tabs (ADR-003). Timers first: the most used feature. */
 enum class Tab(val route: String, val label: String, val icon: ImageVector) {
@@ -96,8 +98,8 @@ fun KaizenRoot() {
                 )
             }
             composable(Tab.Habits.route) { HabitsScreen() }
-            composable(Tab.Todos.route) { ComingSoon("Todos", "Phase 4") }
-            composable(Tab.Journal.route) { ComingSoon("Journal", "Phase 5") }
+            composable(Tab.Todos.route) { TodosScreen() }
+            composable(Tab.Journal.route) { JournalScreen() }
             composable(Tab.More.route) {
                 MoreScreen(onOpen = { route -> navController.navigate(route) })
             }

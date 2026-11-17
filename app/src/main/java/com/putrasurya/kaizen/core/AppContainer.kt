@@ -3,9 +3,11 @@ package com.putrasurya.kaizen.core
 import android.content.Context
 import com.putrasurya.kaizen.core.data.KaizenDatabase
 import com.putrasurya.kaizen.habits.data.HabitRepository
+import com.putrasurya.kaizen.journal.data.JournalRepository
 import com.putrasurya.kaizen.timers.alarm.TimerAlarms
 import com.putrasurya.kaizen.timers.alarm.TimerNotifications
 import com.putrasurya.kaizen.timers.data.TimerRepository
+import com.putrasurya.kaizen.todos.data.TodoRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -38,4 +40,8 @@ class AppContainer(context: Context) {
     }
 
     val habitRepository: HabitRepository by lazy { HabitRepository(database.habitDao(), clock) }
+
+    val todoRepository: TodoRepository by lazy { TodoRepository(database.todoDao(), clock) }
+
+    val journalRepository: JournalRepository by lazy { JournalRepository(database.journalDao()) }
 }

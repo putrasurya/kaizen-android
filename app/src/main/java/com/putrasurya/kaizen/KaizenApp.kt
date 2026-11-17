@@ -4,6 +4,7 @@ import android.app.Application
 import com.putrasurya.kaizen.core.AppContainer
 import com.putrasurya.kaizen.reminder.Notifications
 import com.putrasurya.kaizen.timers.alarm.TimerNotifications
+import com.putrasurya.kaizen.todos.reminder.TodoReminder
 import kotlinx.coroutines.launch
 
 class KaizenApp : Application() {
@@ -22,5 +23,7 @@ class KaizenApp : Application() {
         container.applicationScope.launch {
             container.timerRepository.restore(graceMs = 60_000)
         }
+        // Cheap and safe to repeat: makes sure the evening reminder is set.
+        TodoReminder.reschedule(this)
     }
 }
