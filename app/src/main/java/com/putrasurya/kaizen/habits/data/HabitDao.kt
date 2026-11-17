@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
-import com.putrasurya.kaizen.habits.domain.TapDirection
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
@@ -52,7 +51,8 @@ interface HabitDao {
         "SELECT * FROM habit_taps WHERE habitId = :habitId AND date = :date AND direction = :direction " +
             "ORDER BY at DESC, id DESC LIMIT 1"
     )
-    suspend fun getLatestTap(habitId: Long, date: LocalDate, direction: TapDirection): HabitTapEntity?
+    /** [direction] is a [TapDirection] name; Room stores enums by name. */
+    suspend fun getLatestTap(habitId: Long, date: LocalDate, direction: String): HabitTapEntity?
 
     @Query("DELETE FROM habit_taps WHERE id = :id")
     suspend fun deleteTap(id: Long)

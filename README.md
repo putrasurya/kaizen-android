@@ -4,32 +4,42 @@ Native Android version of [Kaizen](https://github.com/putrasurya/kaizen), writte
 
 See [docs/architecture.md](docs/architecture.md) for the design, the roadmap and the decision records (ADRs).
 
-## Current stage: Phase 2b, timer reps
+## Features
 
-**Timers** work: add a timer to one or more weekdays, start, pause, resume and
-reset it. The screen opens on today's weekday. A running timer keeps going when
-the app is closed: its end time is saved, an exact alarm rings when it's due
-(with sound), and a notification shows the countdown with Pause / Reset
-buttons. After a phone restart, running timers are put back. (ADR-005)
+Everything from the web app's daily use is here (ADR-002: local-only, no sync).
 
-Each finished round adds a **rep** on the date it finished. Cards show
-"3 reps today · 1 h 15 min · 42 all time"; on another weekday, the reps of
-that day in the current week.
-
-The other tabs are placeholders until their phase lands; the Phase 0 reminder
-prototype lives under **More → Reminder test**.
+- **Timers** per weekday that keep running when the app is closed (saved end
+  time + exact alarm, ADR-005), with sound, notification countdown and
+  Pause / Reset buttons. Reps per day, **Pomodoro** breaks (auto or wait,
+  long break every N rounds, skip), and a **focus history** per activity:
+  streak, this week vs last, 12-week heatmap.
+- **Habits**: daily (fill N circles) and routines (− / + with a weekly
+  balance and drift marker, undo). **Auto tap** every N minutes, worked out
+  from the time, so it counts while the app is closed. 8-week history.
+- **Todos**: a checklist per weekday that comes back every week; ticks count
+  for this week only. Copy to other days. **Evening reminder** that says
+  today's unfinished todos out loud; "Couldn't finish? Note it in today's journal".
+- **Journal**: an entry per date, saved as you type, with how your habits
+  went that day, and past entries.
+- **Notes** (under More): quick notes for a weekday, or every day.
+- **Milestones** (under More): what you reached this year, goals still to
+  come, and what to do with last year's unreached goals.
 
 ```
 com.putrasurya.kaizen
 ├── core/        AppContainer, Room database, dates, theme, navigation, boot receiver
-├── timers/
-│   ├── domain/  TimerMath: countdown rules (unit-tested)
-│   ├── data/    tables, DAO, TimerRepository (database + alarm + notification in step)
-│   ├── alarm/   exact alarms, notifications, receiver for alarm and buttons
-│   └── ui/      Timers screen, weekday row, add/edit dialog
+├── timers/      domain (TimerMath, Pomodoro, FocusMath) · data · alarm · ui
+├── habits/      domain (HabitMath: daily, routines, auto tap) · data · ui
+├── todos/       domain (TodoMath) · data · reminder · ui
+├── journal/     data · ui
+├── notes/       notes (one file)
+├── milestones/  domain · data · ui
 ├── more/        the More tab
-└── reminder/    alarm, notification, voice + the test screen
+└── reminder/    voice (TextToSpeech) service + the Phase 0 test screen
 ```
+
+Rules live in `domain/` packages as plain Kotlin, covered by unit tests in
+`app/src/test` (52 tests).
 
 ## How to run
 
@@ -44,4 +54,4 @@ The voice prefers Indonesian. If you don't hear it, check *Settings → System �
 
 ## Next steps
 
-See the roadmap in [docs/architecture.md](docs/architecture.md#roadmap). Next up: **Phase 2c, Pomodoro breaks**.
+All planned phases are done. The backlog (AI-written reminder messages) is in [docs/architecture.md](docs/architecture.md#roadmap).

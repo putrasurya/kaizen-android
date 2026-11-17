@@ -103,7 +103,7 @@ class HabitRepository(
         val updated = if (direction == TapDirection.PLUS) log.copy(plus = maxOf(0, log.plus - 1))
         else log.copy(minus = maxOf(0, log.minus - 1))
         dao.upsertLog(updated)
-        dao.getLatestTap(id, date, direction)?.let { dao.deleteTap(it.id) }
+        dao.getLatestTap(id, date, direction.name)?.let { dao.deleteTap(it.id) }
     }
 
     private suspend fun saveFrozenAutoTaps(habit: Habit) {
