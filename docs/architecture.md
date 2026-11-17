@@ -54,15 +54,25 @@ here, keep using it in the web app.
 | 0 ✅ | Prototype: exact alarm → notification → spoken message |
 | 1 ✅ | Foundation: package structure, Room, `Clock`, navigation with bottom bar |
 | 2a ✅ | Timers: create/edit per weekday, countdown that survives the app closing, sound at the end |
-| 2b | Timers: reps per day |
-| 2c | Timers: Pomodoro breaks (auto-break, long break every N rounds) |
-| 2d | Timers: focus log and history |
-| 3 | Habits: daily (fixed count) and routines (+/− balance, auto-tap), weekly view, history |
-| 4 | Todos, plus a simple spoken reminder for unfinished tasks |
-| 5 | Journal, plus "move unfinished task to journal" |
-| 6 | Notes, milestones |
+| 2b ✅ | Timers: reps per day |
+| 2c ✅ | Timers: Pomodoro breaks (auto-break, long break every N rounds) |
+| 2d ✅ | Timers: focus log and history |
+| 3 ✅ | Habits: daily (fixed count) and routines (+/− balance, auto-tap), weekly view, history |
+| 4 ✅ | Todos, plus an evening spoken reminder for today's unfinished todos |
+| 5 ✅ | Journal, plus "couldn't finish? note it in today's journal" (the todo stays: todos repeat weekly) |
+| 6 ✅ | Notes, milestones |
 | Backlog | AI-written reminder messages (needs a small backend; never ship an API key in the app) |
 | Not doing | Google Drive sync, importing web data, embeds |
+
+## Database versions
+
+| Version | What changed |
+|---|---|
+| 1 | Timers (Phases 1–2b). Replaced once, not migrated: it held only test data and its schema file wasn't committed. |
+| 2 | Run segments for the focus log, habits, todos, journal, notes, milestones. |
+
+From version 2 on, the schema files in `app/schemas/` are committed and every
+change gets a migration (ADR-004).
 
 ## Working rules
 

@@ -45,6 +45,11 @@
             android:name=".timers.alarm.TimerActionReceiver"
             android:exported="false" />
 
+        <!-- The evening todo reminder (speaks today's unfinished todos) -->
+        <receiver
+            android:name=".todos.reminder.TodoReminderReceiver"
+            android:exported="false" />
+
         <!-- Restores alarms after a reboot or an app update -->
         <receiver
             android:name=".core.system.BootReceiver"

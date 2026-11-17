@@ -65,6 +65,60 @@ interface TimerDao {
         ensureRepsRow(timerId, date)
         bumpReps(timerId, date)
     }
+
+    // --- All timers (for the focus history's planned weekdays and renames) ---
+
+    @Query("SELECT * FROM timers")
+    fun observeAllTimers(): Flow<List<TimerEntity>>
+
+    @Query("SELECT * FROM timers")
+    suspend fun getAllTimers(): List<TimerEntity>
+
+    // --- Focus log (Phase 2d). Kept apart from timers, so it outlives them. ---
+
+    @Query("SELECT * FROM focus_log WHERE date = :date")
+    fun observeFocusOn(date: LocalDate): Flow<List<FocusLogEntity>>
+
+    @Query("SELECT * FROM focus_log WHERE activityKey = :activityKey")
+    fun observeFocus(activityKey: String): Flow<List<FocusLogEntity>>
+
+    @Query("SELECT * FROM focus_log WHERE activityKey = :activityKey")
+    suspend fun getFocus(activityKey: String): List<FocusLogEntity>
+
+    @Query(
+        "INSERT OR IGNORE INTO focus_log (date, activityKey, title, seconds, rounds) " +
+            "VALUES (:date, :activityKey, :title, 0, 0)"
+    )
+    suspend fun ensureFocusRow(date: LocalDate, activityKey: String, title: String)
+
+    @Query(
+        "UPDATE focus_log SET seconds = seconds + :seconds, rounds = rounds + :rounds, " +
+            "title = :title WHERE date = :date AND activityKey = :activityKey"
+    )
+    suspend fun bumpFocus(date: LocalDate, activityKey: String, title: String, seconds: Long, rounds: Int)
+
+    @Query("DELETE FROM focus_log WHERE activityKey = :activityKey")
+    suspend fun deleteFocus(activityKey: String)
+
+    @Query("UPDATE focus_log SET title = :title WHERE activityKey = :activityKey")
+    suspend fun relabelFocus(activityKey: String, title: String)
+
+    /** Adds focused time and/or finished rounds for an activity on a date. */
+    @Transaction
+    suspend fun addFocus(date: LocalDate, activityKey: String, title: String, seconds: Long, rounds: Int) {
+        if (activityKey.isEmpty() || (seconds <= 0 && rounds <= 0)) return
+        ensureFocusRow(date, activityKey, title)
+        bumpFocus(date, activityKey, title, seconds, rounds)
+    }
+
+    /** Moves an activity's history to a new name, merging into any history it already has. */
+    @Transaction
+    suspend fun renameFocus(fromKey: String, toKey: String, title: String) {
+        val rows = getFocus(fromKey)
+        deleteFocus(fromKey)
+        rows.forEach { addFocus(it.date, toKey, title, it.seconds, it.rounds) }
+        relabelFocus(toKey, title)
+    }
 }
 
 /** All-time reps of one timer. */

@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 
 /**
  * Receives a timer's alarm (time's up) and its notification buttons
- * (pause, resume, reset). Works even when the app was closed or killed:
+ * (pause, resume, reset, skip break). Works even when the app was closed or killed:
  * Android starts the app process just for this.
  */
 class TimerActionReceiver : BroadcastReceiver() {
@@ -29,6 +29,7 @@ class TimerActionReceiver : BroadcastReceiver() {
                     ACTION_PAUSE -> repository.pause(timerId)
                     ACTION_RESUME -> repository.start(timerId)
                     ACTION_STOP -> repository.stop(timerId)
+                    ACTION_SKIP -> repository.skipBreak(timerId)
                 }
             } finally {
                 pending.finish()
@@ -41,6 +42,7 @@ class TimerActionReceiver : BroadcastReceiver() {
         const val ACTION_PAUSE = "com.putrasurya.kaizen.timer.PAUSE"
         const val ACTION_RESUME = "com.putrasurya.kaizen.timer.RESUME"
         const val ACTION_STOP = "com.putrasurya.kaizen.timer.STOP"
+        const val ACTION_SKIP = "com.putrasurya.kaizen.timer.SKIP_BREAK"
         private const val EXTRA_TIMER_ID = "timerId"
 
         fun intent(context: Context, action: String, timerId: Long): Intent =

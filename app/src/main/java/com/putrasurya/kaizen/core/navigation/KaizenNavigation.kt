@@ -18,14 +18,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.putrasurya.kaizen.core.ui.ComingSoon
+import androidx.navigation.navArgument
+import com.putrasurya.kaizen.habits.ui.HabitsScreen
+import com.putrasurya.kaizen.journal.ui.JournalScreen
+import com.putrasurya.kaizen.milestones.ui.MilestonesScreen
 import com.putrasurya.kaizen.more.MoreScreen
+import com.putrasurya.kaizen.notes.NotesScreen
 import com.putrasurya.kaizen.reminder.ui.ReminderTestScreen
+import com.putrasurya.kaizen.timers.ui.FocusHistoryScreen
 import com.putrasurya.kaizen.timers.ui.TimersScreen
+import com.putrasurya.kaizen.todos.ui.TodosScreen
 
 /** The five bottom-bar tabs (ADR-003). Timers first: the most used feature. */
 enum class Tab(val route: String, val label: String, val icon: ImageVector) {
@@ -79,15 +86,26 @@ fun KaizenRoot() {
             startDestination = Tab.Timers.route,
             modifier = Modifier.padding(padding),
         ) {
-            composable(Tab.Timers.route) { TimersScreen() }
-            composable(Tab.Habits.route) { ComingSoon("Habits", "Phase 3") }
-            composable(Tab.Todos.route) { ComingSoon("Todos", "Phase 4") }
-            composable(Tab.Journal.route) { ComingSoon("Journal", "Phase 5") }
+            composable(Tab.Timers.route) {
+                TimersScreen(onOpenHistory = { id -> navController.navigate("timer-history/$id") })
+            }
+            composable(
+                "timer-history/{timerId}",
+                arguments = listOf(navArgument("timerId") { type = NavType.LongType }),
+            ) { entry ->
+                FocusHistoryScreen(
+                    timerId = entry.arguments?.getLong("timerId") ?: 0L,
+                    onBack = { navController.popBackStack() },
+                )
+            }
+            composable(Tab.Habits.route) { HabitsScreen() }
+            composable(Tab.Todos.route) { TodosScreen() }
+            composable(Tab.Journal.route) { JournalScreen() }
             composable(Tab.More.route) {
                 MoreScreen(onOpen = { route -> navController.navigate(route) })
             }
-            composable(MoreRoutes.NOTES) { ComingSoon("Notes", "Phase 6") }
-            composable(MoreRoutes.MILESTONES) { ComingSoon("Milestones", "Phase 6") }
+            composable(MoreRoutes.NOTES) { NotesScreen(onBack = { navController.popBackStack() }) }
+            composable(MoreRoutes.MILESTONES) { MilestonesScreen(onBack = { navController.popBackStack() }) }
             composable(MoreRoutes.REMINDER_TEST) { ReminderTestScreen() }
         }
     }
