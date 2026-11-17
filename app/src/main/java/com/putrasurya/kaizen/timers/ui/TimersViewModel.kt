@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.putrasurya.kaizen.core.time.Dates
 import com.putrasurya.kaizen.timers.data.TimerRepository
 import com.putrasurya.kaizen.timers.data.TimerWithRun
+import com.putrasurya.kaizen.timers.domain.Pomodoro
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -57,11 +58,13 @@ class TimersViewModel(
         return Selection(weekday, date, isToday = date == lastSeenToday)
     }
 
-    fun add(title: String, durationSec: Int, weekdays: Set<Int>) =
-        viewModelScope.launch { repository.add(title, durationSec, weekdays) }
+    fun add(title: String, durationSec: Int, weekdays: Set<Int>, pomodoro: Pomodoro?) =
+        viewModelScope.launch { repository.add(title, durationSec, weekdays, pomodoro) }
 
-    fun edit(id: Long, title: String, durationSec: Int) =
-        viewModelScope.launch { repository.edit(id, title, durationSec) }
+    fun edit(id: Long, title: String, durationSec: Int, pomodoro: Pomodoro?) =
+        viewModelScope.launch { repository.edit(id, title, durationSec, pomodoro) }
+
+    fun skipBreak(id: Long) = viewModelScope.launch { repository.skipBreak(id) }
 
     fun delete(id: Long) = viewModelScope.launch { repository.delete(id) }
     fun start(id: Long) = viewModelScope.launch { repository.start(id) }

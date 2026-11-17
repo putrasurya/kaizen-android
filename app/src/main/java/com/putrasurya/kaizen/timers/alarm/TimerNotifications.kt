@@ -13,47 +13,75 @@ import android.net.Uri
 import com.putrasurya.kaizen.MainActivity
 import com.putrasurya.kaizen.R
 import com.putrasurya.kaizen.timers.data.TimerEntity
+import com.putrasurya.kaizen.timers.data.TimerPhase
 import com.putrasurya.kaizen.timers.domain.TimerMath
 
 /**
  * The notifications of a timer. Each timer has one notification slot that
- * changes between running, paused and done.
+ * changes between running, paused, round done and break over.
  */
 class TimerNotifications(private val context: Context) {
 
     private val manager = context.getSystemService(NotificationManager::class.java)
 
     /** Countdown drawn by Android itself, so the app never updates it every second. */
-    fun showRunning(timer: TimerEntity, endsAt: Long) {
-        val notification = base(RUNNING_CHANNEL, timer)
-            .setContentText("Running")
-            .setUsesChronometer(true)
-            .setChronometerCountDown(true)
-            .setWhen(endsAt)
-            .setShowWhen(true)
+    fun showRunning(timer: TimerEntity, phase: TimerPhase, endsAt: Long) {
+        val builder = base(RUNNING_CHANNEL, timer)
+            .setContentText(phaseLabel(phase))
+            .withCountdown(endsAt)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .addAction(action("Pause", TimerActionReceiver.ACTION_PAUSE, timer.id))
-            .addAction(action("Reset", TimerActionReceiver.ACTION_STOP, timer.id))
-            .build()
-        notify(timer.id, notification)
+        addEndAction(builder, phase, timer.id)
+        notify(timer.id, builder.build())
     }
 
-    fun showPaused(timer: TimerEntity, remainingMs: Long) {
+    fun showPaused(timer: TimerEntity, phase: TimerPhase, remainingMs: Long) {
         val left = TimerMath.formatClock(TimerMath.displaySeconds(remainingMs))
-        val notification = base(RUNNING_CHANNEL, timer)
-            .setContentText("Paused · $left left")
+        val builder = base(RUNNING_CHANNEL, timer)
+            .setContentText("${phaseLabel(phase)} paused · $left left")
             .setShowWhen(false)
             .addAction(action("Resume", TimerActionReceiver.ACTION_RESUME, timer.id))
-            .addAction(action("Reset", TimerActionReceiver.ACTION_STOP, timer.id))
-            .build()
-        notify(timer.id, notification)
+        addEndAction(builder, phase, timer.id)
+        notify(timer.id, builder.build())
     }
 
-    /** Plays the timer sound (set on the channel). */
-    fun showDone(timer: TimerEntity, repsToday: Int) {
+    /**
+     * Time's up for a focus round (plays the sound). With Pomodoro, the break
+     * that follows is shown in the same notification: counting down if it
+     * started by itself ([breakEndsAt]), or ready to start.
+     */
+    fun showRoundDone(
+        timer: TimerEntity,
+        repsToday: Int,
+        breakPhase: TimerPhase? = null,
+        breakEndsAt: Long? = null,
+    ) {
+        val reps = "${TimerMath.repsLabel(repsToday)} today"
+        val builder = base(DONE_CHANNEL, timer)
+            .setCategory(Notification.CATEGORY_ALARM)
+        when {
+            breakPhase == null -> builder
+                .setContentText("Time's up · $reps")
+                .setAutoCancel(true)
+            breakEndsAt != null -> builder
+                .setContentText("Round done · $reps · ${phaseLabel(breakPhase)}")
+                .withCountdown(breakEndsAt)
+                .setOngoing(true)
+                .addAction(action("Pause", TimerActionReceiver.ACTION_PAUSE, timer.id))
+                .addAction(action("Skip break", TimerActionReceiver.ACTION_SKIP, timer.id))
+            else -> builder
+                .setContentText("Round done · $reps · ${phaseLabel(breakPhase)} ready")
+                .addAction(action("Start break", TimerActionReceiver.ACTION_RESUME, timer.id))
+                .addAction(action("Skip break", TimerActionReceiver.ACTION_SKIP, timer.id))
+        }
+        notify(timer.id, builder.build())
+    }
+
+    /** A break reached zero (plays the sound): the next focus round waits for Start. */
+    fun showBreakOver(timer: TimerEntity) {
         val notification = base(DONE_CHANNEL, timer)
-            .setContentText("Time's up · ${TimerMath.repsLabel(repsToday)} today")
+            .setContentText("Break over · ready for the next round")
             .setCategory(Notification.CATEGORY_ALARM)
             .setAutoCancel(true)
             .build()
@@ -63,6 +91,20 @@ class TimerNotifications(private val context: Context) {
     fun cancel(timerId: Long) {
         manager.cancel(notificationId(timerId))
     }
+
+    private fun addEndAction(builder: Notification.Builder, phase: TimerPhase, timerId: Long) {
+        if (phase == TimerPhase.FOCUS) {
+            builder.addAction(action("Reset", TimerActionReceiver.ACTION_STOP, timerId))
+        } else {
+            builder.addAction(action("Skip break", TimerActionReceiver.ACTION_SKIP, timerId))
+        }
+    }
+
+    private fun Notification.Builder.withCountdown(endsAt: Long): Notification.Builder =
+        setUsesChronometer(true)
+            .setChronometerCountDown(true)
+            .setWhen(endsAt)
+            .setShowWhen(true)
 
     private fun notify(timerId: Long, notification: Notification) {
         // Without the notification permission this would be dropped anyway.
@@ -103,6 +145,12 @@ class TimerNotifications(private val context: Context) {
 
         fun notificationId(timerId: Long): Int = ID_OFFSET + timerId.toInt()
 
+        fun phaseLabel(phase: TimerPhase): String = when (phase) {
+            TimerPhase.FOCUS -> "Focus"
+            TimerPhase.BREAK -> "Break"
+            TimerPhase.LONG_BREAK -> "Long break"
+        }
+
         fun createChannels(context: Context) {
             val manager = context.getSystemService(NotificationManager::class.java)
             val running = NotificationChannel(
@@ -117,7 +165,7 @@ class TimerNotifications(private val context: Context) {
             val done = NotificationChannel(
                 DONE_CHANNEL, "Timer finished", NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "Plays a sound when a timer reaches zero"
+                description = "Plays a sound when a timer or break reaches zero"
                 setSound(
                     sound,
                     AudioAttributes.Builder()

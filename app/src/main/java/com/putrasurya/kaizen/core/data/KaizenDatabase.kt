@@ -15,6 +15,10 @@ import com.putrasurya.kaizen.timers.data.TimerRunEntity
  * The one database for the whole app. Each feature adds its own tables here
  * and its own DAO. Changing a table means bumping [version] and adding a
  * migration (ADR-004).
+ *
+ * Version history:
+ *  1. Timers (Phase 1–2b)
+ *  2. Pomodoro run segments, habits, todos, journal, notes, milestones
  */
 @Database(
     entities = [
@@ -23,7 +27,7 @@ import com.putrasurya.kaizen.timers.data.TimerRunEntity
         TimerRepsEntity::class,
         FocusLogEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 @TypeConverters(Converters::class)
@@ -33,6 +37,11 @@ abstract class KaizenDatabase : RoomDatabase() {
 
     companion object {
         fun create(context: Context): KaizenDatabase =
-            Room.databaseBuilder(context, KaizenDatabase::class.java, "kaizen.db").build()
+            Room.databaseBuilder(context, KaizenDatabase::class.java, "kaizen.db")
+                // Version 1 only ever held test data and its schema file wasn't
+                // committed, so it is replaced once instead of migrated. From
+                // version 2 on, every change gets a real migration (ADR-004).
+                .fallbackToDestructiveMigrationFrom(dropAllTables = true, 1)
+                .build()
     }
 }
