@@ -26,18 +26,21 @@ class TimersViewModel(
     /** 1 = Monday … 7 = Sunday. */
     val today: Int get() = lastSeenToday.dayOfWeek.value
 
-    private val selected = MutableStateFlow(today)
-    val weekday: StateFlow<Int> = selected.asStateFlow()
+    /** The weekday shown, and its date in the current week (for reps). */
+    data class Selection(val weekday: Int, val date: LocalDate, val isToday: Boolean)
+
+    private val selected = MutableStateFlow(selectionFor(today))
+    val selection: StateFlow<Selection> = selected.asStateFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val timers: StateFlow<List<TimerWithRun>> = selected
-        .flatMapLatest { repository.observeDay(it) }
+        .flatMapLatest { repository.observeDay(it.weekday, it.date) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     fun nowMs(): Long = clock.millis()
 
     fun selectDay(weekday: Int) {
-        selected.value = weekday
+        selected.value = selectionFor(weekday)
     }
 
     /** The active day follows the calendar: after midnight, jump to the new today. */
@@ -45,8 +48,13 @@ class TimersViewModel(
         val now = Dates.today(clock)
         if (now != lastSeenToday) {
             lastSeenToday = now
-            selected.value = today
+            selected.value = selectionFor(today)
         }
+    }
+
+    private fun selectionFor(weekday: Int): Selection {
+        val date = Dates.dateInSameWeek(lastSeenToday, weekday)
+        return Selection(weekday, date, isToday = date == lastSeenToday)
     }
 
     fun add(title: String, durationSec: Int, weekdays: Set<Int>) =

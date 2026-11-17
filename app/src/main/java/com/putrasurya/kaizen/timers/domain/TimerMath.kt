@@ -46,6 +46,21 @@ object TimerMath {
         else "$minutes:$seconds"
     }
 
+    /** Time spent, for the reps line: "1 h 30 min", "1 h", "25 min", "0 min". */
+    fun formatDuration(totalSeconds: Long): String {
+        val minutes = max(0L, totalSeconds) / 60
+        val hours = minutes / 60
+        val rest = minutes % 60
+        return when {
+            hours == 0L -> "$rest min"
+            rest == 0L -> "$hours h"
+            else -> "$hours h $rest min"
+        }
+    }
+
+    /** "1 rep", "3 reps". */
+    fun repsLabel(count: Int): String = if (count == 1) "1 rep" else "$count reps"
+
     /** Minutes typed by the user, as seconds; null when empty or out of range. */
     fun parseMinutes(text: String): Int? {
         val minutes = text.trim().toIntOrNull() ?: return null

@@ -4,13 +4,17 @@ Native Android version of [Kaizen](https://github.com/putrasurya/kaizen), writte
 
 See [docs/architecture.md](docs/architecture.md) for the design, the roadmap and the decision records (ADRs).
 
-## Current stage: Phase 2a, timers
+## Current stage: Phase 2b, timer reps
 
 **Timers** work: add a timer to one or more weekdays, start, pause, resume and
 reset it. The screen opens on today's weekday. A running timer keeps going when
 the app is closed: its end time is saved, an exact alarm rings when it's due
 (with sound), and a notification shows the countdown with Pause / Reset
 buttons. After a phone restart, running timers are put back. (ADR-005)
+
+Each finished round adds a **rep** on the date it finished. Cards show
+"3 reps today · 1 h 15 min · 42 all time"; on another weekday, the reps of
+that day in the current week.
 
 The other tabs are placeholders until their phase lands; the Phase 0 reminder
 prototype lives under **More → Reminder test**.
@@ -40,4 +44,4 @@ The voice prefers Indonesian. If you don't hear it, check *Settings → System �
 
 ## Next steps
 
-See the roadmap in [docs/architecture.md](docs/architecture.md#roadmap). Next up: **Phase 2b, reps per day**.
+See the roadmap in [docs/architecture.md](docs/architecture.md#roadmap). Next up: **Phase 2c, Pomodoro breaks**.

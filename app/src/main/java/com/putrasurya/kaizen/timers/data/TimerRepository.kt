@@ -1,5 +1,6 @@
 package com.putrasurya.kaizen.timers.data
 
+import com.putrasurya.kaizen.core.time.Dates
 import com.putrasurya.kaizen.timers.alarm.TimerAlarms
 import com.putrasurya.kaizen.timers.alarm.TimerNotifications
 import com.putrasurya.kaizen.timers.domain.TimerMath
@@ -8,9 +9,18 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.time.Clock
+import java.time.LocalDate
 
-/** A timer together with its run, if it has been started. */
-data class TimerWithRun(val timer: TimerEntity, val run: TimerRunEntity?) {
+/**
+ * A timer together with its run (if started) and its reps: on the date being
+ * shown, and all-time.
+ */
+data class TimerWithRun(
+    val timer: TimerEntity,
+    val run: TimerRunEntity?,
+    val reps: Int = 0,
+    val repsTotal: Int = 0,
+) {
     val isRunning: Boolean get() = run?.endsAt != null
     val isPaused: Boolean get() = run?.remainingMs != null
 
@@ -32,10 +42,25 @@ class TimerRepository(
 ) {
     private val mutex = Mutex()
 
-    fun observeDay(weekday: Int): Flow<List<TimerWithRun>> =
-        combine(dao.observeTimers(weekday), dao.observeRuns()) { timers, runs ->
+    /** The timers of [weekday], with their reps on [date]. */
+    fun observeDay(weekday: Int, date: LocalDate): Flow<List<TimerWithRun>> =
+        combine(
+            dao.observeTimers(weekday),
+            dao.observeRuns(),
+            dao.observeRepsOn(date),
+            dao.observeRepTotals(),
+        ) { timers, runs, reps, totals ->
             val runsById = runs.associateBy { it.timerId }
-            timers.map { TimerWithRun(it, runsById[it.id]) }
+            val repsById = reps.associate { it.timerId to it.count }
+            val totalsById = totals.associate { it.timerId to it.total }
+            timers.map {
+                TimerWithRun(
+                    timer = it,
+                    run = runsById[it.id],
+                    reps = repsById[it.id] ?: 0,
+                    repsTotal = totalsById[it.id] ?: 0,
+                )
+            }
         }
 
     /** Adds the same timer to each of [weekdays] (1 = Monday … 7 = Sunday). */
@@ -134,9 +159,16 @@ class TimerRepository(
             return
         }
         val timer = dao.getTimer(id)
-        // Phase 2a: the round is over, back to full length.
-        // Reps (2b), Pomodoro breaks (2c) and the focus log (2d) hook in here.
+        // The round is over: +1 rep on the date it finished (even if nobody heard
+        // it ring, e.g. the phone was off), then back to full length.
+        // Pomodoro breaks (2c) and the focus log (2d) hook in here.
+        val finishedOn = Dates.dateOf(endsAt, clock)
+        dao.addRep(id, finishedOn)
         dao.deleteRun(id)
-        if (timer != null && announce) notifications.showDone(timer) else notifications.cancel(id)
+        if (timer != null && announce) {
+            notifications.showDone(timer, repsToday = dao.getReps(id, finishedOn) ?: 1)
+        } else {
+            notifications.cancel(id)
+        }
     }
 }
