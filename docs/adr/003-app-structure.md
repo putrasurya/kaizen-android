@@ -1,7 +1,7 @@
 # ADR-003: One module, organised by feature, with plain Kotlin rules
 
 ## Status
-Proposed
+Accepted (2026-11-17)
 
 ## Context
 Kaizen will have six features (timers, habits, todos, journal, notes,
