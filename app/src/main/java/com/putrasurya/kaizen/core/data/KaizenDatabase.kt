@@ -11,6 +11,10 @@ import com.putrasurya.kaizen.habits.data.HabitLogEntity
 import com.putrasurya.kaizen.habits.data.HabitTapEntity
 import com.putrasurya.kaizen.journal.data.JournalDao
 import com.putrasurya.kaizen.journal.data.JournalEntity
+import com.putrasurya.kaizen.milestones.data.MilestoneDao
+import com.putrasurya.kaizen.milestones.data.MilestoneEntity
+import com.putrasurya.kaizen.notes.NoteDao
+import com.putrasurya.kaizen.notes.NoteEntity
 import com.putrasurya.kaizen.timers.data.FocusLogEntity
 import com.putrasurya.kaizen.timers.data.TimerDao
 import com.putrasurya.kaizen.timers.data.TimerEntity
@@ -39,6 +43,8 @@ import com.putrasurya.kaizen.todos.data.TodoEntity
         HabitTapEntity::class,
         TodoEntity::class,
         JournalEntity::class,
+        NoteEntity::class,
+        MilestoneEntity::class,
     ],
     version = 2,
     exportSchema = true,
@@ -50,6 +56,8 @@ abstract class KaizenDatabase : RoomDatabase() {
     abstract fun habitDao(): HabitDao
     abstract fun todoDao(): TodoDao
     abstract fun journalDao(): JournalDao
+    abstract fun noteDao(): NoteDao
+    abstract fun milestoneDao(): MilestoneDao
 
     companion object {
         fun create(context: Context): KaizenDatabase =

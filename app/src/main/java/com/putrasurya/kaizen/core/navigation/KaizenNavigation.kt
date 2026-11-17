@@ -24,10 +24,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.putrasurya.kaizen.core.ui.ComingSoon
 import com.putrasurya.kaizen.habits.ui.HabitsScreen
 import com.putrasurya.kaizen.journal.ui.JournalScreen
+import com.putrasurya.kaizen.milestones.ui.MilestonesScreen
 import com.putrasurya.kaizen.more.MoreScreen
+import com.putrasurya.kaizen.notes.NotesScreen
 import com.putrasurya.kaizen.reminder.ui.ReminderTestScreen
 import com.putrasurya.kaizen.timers.ui.FocusHistoryScreen
 import com.putrasurya.kaizen.timers.ui.TimersScreen
@@ -103,8 +104,8 @@ fun KaizenRoot() {
             composable(Tab.More.route) {
                 MoreScreen(onOpen = { route -> navController.navigate(route) })
             }
-            composable(MoreRoutes.NOTES) { ComingSoon("Notes", "Phase 6") }
-            composable(MoreRoutes.MILESTONES) { ComingSoon("Milestones", "Phase 6") }
+            composable(MoreRoutes.NOTES) { NotesScreen(onBack = { navController.popBackStack() }) }
+            composable(MoreRoutes.MILESTONES) { MilestonesScreen(onBack = { navController.popBackStack() }) }
             composable(MoreRoutes.REMINDER_TEST) { ReminderTestScreen() }
         }
     }

@@ -13,8 +13,8 @@ import com.putrasurya.kaizen.core.navigation.MoreRoutes
 @Composable
 fun MoreScreen(onOpen: (String) -> Unit, modifier: Modifier = Modifier) {
     Column(modifier) {
-        MoreItem("Notes", "Coming in Phase 6") { onOpen(MoreRoutes.NOTES) }
-        MoreItem("Milestones", "Coming in Phase 6") { onOpen(MoreRoutes.MILESTONES) }
+        MoreItem("Notes", "Quick notes that come back on a weekday, or every day") { onOpen(MoreRoutes.NOTES) }
+        MoreItem("Milestones", "Your record of the year: what you reached, and goals") { onOpen(MoreRoutes.MILESTONES) }
         HorizontalDivider()
         MoreItem("Reminder test", "Alarm, notification and voice check") {
             onOpen(MoreRoutes.REMINDER_TEST)

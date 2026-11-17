@@ -174,17 +174,21 @@ fun JournalScreen(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onClick = { viewModel.open(date.minusDays(1)) }) { Text("‹") }
-                Text(
-                    if (date == today) "Today · ${date.format(longFormat)}" else date.format(longFormat),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f),
-                )
-                TextButton(onClick = { viewModel.open(date.plusDays(1)) }, enabled = date.isBefore(today)) { Text("›") }
-            }
-            if (date != today) {
-                TextButton(onClick = { viewModel.open(today) }) { Text("Back to today") }
+            Column {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    TextButton(onClick = { viewModel.open(date.minusDays(1)) }) { Text("‹") }
+                    Text(
+                        if (date == today) "Today · ${date.format(longFormat)}" else date.format(longFormat),
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.weight(1f),
+                    )
+                    TextButton(onClick = { viewModel.open(date.plusDays(1)) }, enabled = date.isBefore(today)) {
+                        Text("›")
+                    }
+                }
+                if (date != today) {
+                    TextButton(onClick = { viewModel.open(today) }) { Text("Back to today") }
+                }
             }
         }
         item {
@@ -216,8 +220,10 @@ fun JournalScreen(modifier: Modifier = Modifier) {
         val older = past.filter { it.date != date }
         if (older.isNotEmpty()) {
             item {
-                HorizontalDivider()
-                Text("Past entries", style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 8.dp))
+                Column {
+                    HorizontalDivider()
+                    Text("Past entries", style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 8.dp))
+                }
             }
             items(older, key = { it.date.toEpochDay() }) { entry ->
                 Column(
